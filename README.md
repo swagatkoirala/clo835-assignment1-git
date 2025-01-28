@@ -1,0 +1,48 @@
+# Terraform Setup and Deployment Guide
+
+This guide outlines the steps to set up and deploy Terraform configurations in an AWS Cloud9 environment for VPC.
+
+## Step 1: Install Terraform in Cloud9
+
+1. Open the terminal in your Cloud9 environment.
+2. Run the following commands to install Terraform:
+   ```bash
+   sudo yum install -y yum-utils
+   sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+   sudo yum -y install terraform
+   ```
+
+## Step 2: Initialize and Apply Terraform for Non-Prod VPC
+
+1. Navigate to the `terraform/network` directory:
+   ```bash
+   cd /terraform/network
+   ```
+2. Run the following Terraform commands:
+   ```bash
+   terraform init
+   terraform validate
+   terraform plan
+   terraform apply
+   ```
+
+## Step 3: Create a Global SSH Key
+
+1. Generate an SSH key to be used for environment:
+   ```bash
+   ssh-keygen -t rsa -b 2048 -f assignment1
+   ```
+
+## Step 4: Initialize and Apply Terraform for Non-Prod Webserver
+
+1. Navigate to the `terraform/webserver` directory:
+   ```bash
+   cd /terraform/webserver
+   ```
+2. Run the following Terraform commands:
+   ```bash
+   terraform init
+   terraform validate
+   terraform plan
+   terraform apply
+   ```
