@@ -5,7 +5,7 @@ variable "prefix" {
 
 variable "default_tags" {
   description = "Default tags for resources"
-  type        = string
+  type        = map(string)
 }
 
 variable "vpc" {

@@ -11,7 +11,7 @@ data "aws_ami" "latest_amazon_linux" {
   }
 }
 
-data "terraform_remote_state" "network" { 
+data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
     bucket = "clo835-assignment1-swagatkoirala"
@@ -26,11 +26,11 @@ resource "aws_instance" "amazon_linux" {
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.web_key.key_name
   subnet_id                   = data.terraform_remote_state.network.outputs.public_subnet_id
-  security_groups             = [aws_security_group.vm_sg.id]
+  security_groups             = [aws_security_group.security_group.id]
   associate_public_ip_address = true
   tags = {
-      "Name" = "EC2-Instance"
-    }
+    "Name" = "EC2-Instance"
+  }
 }
 
 #ssh key pair for ec2 instance
@@ -45,29 +45,29 @@ resource "aws_security_group" "security_group" {
   vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
 
   ingress {
-    description      = "HTTP from everywhere"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "HTTP from everywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    description      = "SSH from everywhere"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    description = "SSH from everywhere"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
-      "Name" = "EC2-sg"
-    }
+    "Name" = "EC2-sg"
+  }
 }

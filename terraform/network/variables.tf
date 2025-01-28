@@ -15,6 +15,11 @@ variable "vpc" {
   description = "VPC CIDR block for the environment."
 }
 
+variable "prefix" {
+  default     = "assignment1"
+  type        = string
+}
+
 # Provision public subnets in custom VPC
 variable "public_subnet" {
   default     = "10.0.1.0/24"

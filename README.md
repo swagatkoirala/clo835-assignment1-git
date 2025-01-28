@@ -28,7 +28,7 @@ This guide outlines the steps to set up and deploy Terraform configurations in a
 
 ## Step 3: Create a Global SSH Key
 
-1. Generate an SSH key to be used for environment:
+1. Generate an SSH key to be used for environment in `/terraform` directory:
    ```bash
    ssh-keygen -t rsa -b 2048 -f assignment1
    ```

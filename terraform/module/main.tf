@@ -19,7 +19,7 @@ resource "aws_subnet" "public_subnet" {
 # Internet Gateway
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
-  tags   = merge(local.default_tags, { "Name" = "${local.name_prefix}-igw" })
+  tags   = { "Name" = "My IGW" }
 }
 
 
