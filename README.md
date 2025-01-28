@@ -46,3 +46,19 @@ This guide outlines the steps to set up and deploy Terraform configurations in a
    terraform plan
    terraform apply
    ```
+
+# Docker Setup
+
+This guide outlines the steps to set up docker.
+
+## Step 1: Install Docker in EC2
+
+1. Open the terminal in your EC2 Instance.
+2. Run the following commands to install Docker:
+   ```bash
+   sudo yum update -y
+   sudo yum install -y docker
+   sudo systemctl start docker
+   sudo systemctl enable docker
+   ```
+
