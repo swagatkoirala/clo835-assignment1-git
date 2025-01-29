@@ -8,18 +8,16 @@ pip3 install -r requirements.txt
 sudo python3 app.py
 # Building and running 2 tier web application locally
 ### Building mysql docker image 
-```docker build -t my_db -f Dockerfile_mysql . ```
+```docker build -t sql_database -f Dockerfile_mysql . ```
 
 ### Building application docker image 
-```docker build -t my_app -f Dockerfile . ```
+```docker build -t web_application -f Dockerfile . ```
 
 ### Running mysql
 ```docker run -d -e MYSQL_ROOT_PASSWORD=pw  my_db```
 
-
 ### Get the IP of the database and export it as DBHOST variable
 ```docker inspect <container_id>```
-
 
 ### Example when running DB runs as a docker container and app is running locally
 ```
@@ -38,4 +36,4 @@ export DBPWD=pw
 export APP_COLOR=blue
 ```
 ### Run the application, make sure it is visible in the browser
-```docker run -p 8080:8080  -e DBHOST=$DBHOST -e DBPORT=$DBPORT -e  DBUSER=$DBUSER -e DBPWD=$DBPWD  my_app```
+```docker run -p 8080:8080  -e DBHOST=$DBHOST -e DBPORT=$DBPORT -e  DBUSER=$DBUSER -e DBPWD=$DBPWD  web_application```
