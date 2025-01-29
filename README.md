@@ -1,6 +1,6 @@
 # Terraform Setup and Deployment Guide
 
-This guide outlines the steps to set up and deploy Terraform configurations in an AWS Cloud9 environment for VPC.
+This guide outlines the steps to set up and deploy Terraform configurations in an AWS Cloud9 environment for EC2 instance and AWS ECR.
 
 ## Step 1: Install Terraform in Cloud9
 
