@@ -12,14 +12,11 @@ data "aws_ami" "latest_amazon_linux" {
 }
 
 data "terraform_remote_state" "network" {
-  backend = "s3"
+  backend = "local"
   config = {
-    bucket = "clo835-assignment1-swagatkoirala"
-    key    = "network/terraform.tfstate"
-    region = "us-east-1"
+    path = "../network/terraform.tfstate"
   }
 }
-
 
 resource "aws_instance" "amazon_linux" {
   ami                         = data.aws_ami.latest_amazon_linux.id
