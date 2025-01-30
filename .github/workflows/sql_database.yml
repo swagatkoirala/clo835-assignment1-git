@@ -27,10 +27,12 @@ jobs:
         IMAGE_TAG: v0.1
       run: |
         # Docker build
-        docker build -t sql_database -f Dockerfile_mysql . $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        
-        docker ps
-        echo "Pause for 10 seconds to let container start"
-        sleep 10
-        curl localhost -vvv
+        # Build Docker image
+        docker build -t sql_database:$IMAGE_TAG -f Dockerfile_mysql .
+          
+        # Tag the image for ECR
+        docker tag sql_database:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          
+        # Push image to ECR
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
