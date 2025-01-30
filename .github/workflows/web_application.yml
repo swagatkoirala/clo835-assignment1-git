@@ -1,5 +1,4 @@
-name: Deploy to ECR
-# check again
+name: Webapp-Deploy to ECR
 on: 
   push:
     branches: [ main ]

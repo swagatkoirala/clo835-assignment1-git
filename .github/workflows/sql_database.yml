@@ -1,4 +1,4 @@
-name: Deploy to ECR
+name: SQL-Deploy to ECR
 on: 
   push:
     branches: [ main ]
