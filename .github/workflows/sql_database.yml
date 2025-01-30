@@ -33,12 +33,7 @@ jobs:
         cd web/
         ls -ltra
         # Build Docker image
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .          
-        docker run -d -p 80:8080 --name mysql $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker ps
-        echo "Pause for 10 seconds to let container start"
-        sleep 10
-        curl localhost -vvv
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.sql .
 
         # Push image to ECR
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
