@@ -62,7 +62,8 @@ jobs:
         docker network create webapp-network || true
         docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
             
-        docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-        docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -p 8082:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-        docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -p 8083:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        # Run containers in detached mode
+        nohup docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1 &> /dev/null &
+        nohup docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -p 8082:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1 &> /dev/null &
+        nohup docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -p 8083:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1 &> /dev/null &
         EOF

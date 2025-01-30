@@ -60,5 +60,5 @@ jobs:
 
         docker network create webapp-network || true
         docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1     
-        docker run -d --name mysql -p 8080:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1        
+        docker run -d --name mysql -p 8080:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1 &> /dev/null &
         EOF
