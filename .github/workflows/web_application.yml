@@ -38,31 +38,31 @@ jobs:
         # Push image to ECR
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
     
-    # - name: Setup SSH Key
-    #   run: |
-    #     mkdir -p ~/.ssh
-    #     echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/assignment1.pem
-    #     chmod 600 ~/.ssh/assignment1.pem
+    - name: Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/assignment1.pem
+        chmod 600 ~/.ssh/assignment1.pem
 
-    # - name: Deploy to EC2 and Run Containers
-    #   run: |
-    #     ssh -t -o StrictHostKeyChecking=no -i ~/.ssh/assignment1.pem ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+    - name: Deploy to EC2 and Run Containers
+      run: |
+        ssh -t -o StrictHostKeyChecking=no -i ~/.ssh/assignment1.pem ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
 
-    #     # Ensure Docker is installed
-    #     if ! command -v docker &> /dev/null
-    #     then
-    #         echo "Docker not found! Installing..."
-    #         sudo yum update -y
-    #         sudo yum install -y docker
-    #         sudo systemctl start docker
-    #         sudo systemctl enable docker
-    #         sudo usermod -aG docker ec2-user
-    #     fi
+        # Ensure Docker is installed
+        if ! command -v docker &> /dev/null
+        then
+            echo "Docker not found! Installing..."
+            sudo yum update -y
+            sudo yum install -y docker
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo usermod -aG docker ec2-user
+        fi
 
-    #     docker network create webapp-network || true
-    #     docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        docker network create webapp-network || true
+        docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
             
-    #     docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-    #     docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -p 8082:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-    #     docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -p 8083:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-    #     EOF
+        docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -p 8082:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -p 8083:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        EOF
