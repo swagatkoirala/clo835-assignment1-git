@@ -33,7 +33,20 @@ jobs:
         cd web/
         ls -ltra
         # Build Docker image
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .          
-
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
+        
         # Push image to ECR
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+        # Create a custom bridge network
+        docker network create webapp-network
+
+        # Run Blue container on port 8081
+        docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+
+        # Run Pink container on port 8082
+        docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -p 8082:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+
+        # Run Lime container on port 8083
+        docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -p 8083:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+
