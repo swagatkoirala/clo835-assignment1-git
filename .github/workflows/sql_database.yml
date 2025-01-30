@@ -60,5 +60,13 @@ jobs:
 
         docker network create webapp-network || true
         docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1     
-        docker run -d --name mysql -p 8080:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1 &> /dev/null &
+        # Run MySQL container with necessary environment variables
+        docker run -d --name mysql \
+        --network webapp-network \
+        -e MYSQL_ROOT_PASSWORD=my-secret-pw \
+        -p 3306:3306 \
+        ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1
+
+        # Optionally, check if the container is running
+        docker ps
         EOF
