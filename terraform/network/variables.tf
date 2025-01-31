@@ -16,8 +16,8 @@ variable "vpc" {
 }
 
 variable "prefix" {
-  default     = "assignment1"
-  type        = string
+  default = "assignment1"
+  type    = string
 }
 
 # Provision public subnets in custom VPC
