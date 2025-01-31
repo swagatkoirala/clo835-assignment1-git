@@ -1,4 +1,4 @@
-name: SQL-Deploy to ECR
+name: SQL and Web Application - Deploy to ECR
 #a
 on: 
   push:
