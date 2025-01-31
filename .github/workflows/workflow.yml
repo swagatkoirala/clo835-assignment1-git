@@ -27,16 +27,19 @@ jobs:
     - name: Build, test, tag, and push sql image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: clo835-assignment1-sql-image
+        SQL_ECR_REPOSITORY: clo835-assignment1-sql-image
+        WEBAPP_ECR_REPOSITORY: clo835-assignment1-webapp-image
         IMAGE_TAG: v0.1
       run: |
         cd web/
         ls -ltra
         # Build Docker image
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile_mysql .
+        docker build -t $ECR_REGISTRY/$SQL_ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile_mysql .
+        docker build -t $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
 
         # Push image to ECR
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$SQL_ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$IMAGE_TAG
 
     - name: Setup SSH Key
       run: |
@@ -60,9 +63,15 @@ jobs:
         fi
 
         docker network create webapp-network || true
-        docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1     
+        docker pull ${{ steps.login-ecr.outputs.registry }}/$SQL_ECR_REPOSITORY:$IMAGE_TAG    
+        docker pull ${{ steps.login-ecr.outputs.registry }}/$WEBAPP_ECR_REPOSITORY:$IMAGE_TAG    
         # Run MySQL container with necessary environment variables
-        docker run -d --name mysql --network webapp-network -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1
+        docker run -d --name mysql --network webapp-network -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 ${{ steps.login-ecr.outputs.registry }}/$SQL_ECR_REPOSITORY:$IMAGE_TAG
+
+        # Run Web Application container with necessary environment variables
+        docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -e DB_HOST=mysql -e DB_PORT=3306 -e DB_USER=root -e DB_PASSWORD=my-secret-pw -e DB_NAME=mydatabase -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/$WEBAPP_ECR_REPOSITORY:$IMAGE_TAG
+        docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -e DB_HOST=mysql -e DB_PORT=3306 -e DB_USER=root -e DB_PASSWORD=my-secret-pw -e DB_NAME=mydatabase -p 8082:80 ${{ steps.login-ecr.outputs.registry }}/$WEBAPP_ECR_REPOSITORY:$IMAGE_TAG
+        docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -e DB_HOST=mysql -e DB_PORT=3306 -e DB_USER=root -e DB_PASSWORD=my-secret-pw -e DB_NAME=mydatabase -p 8083:80 ${{ steps.login-ecr.outputs.registry }}/$WEBAPP_ECR_REPOSITORY:$IMAGE_TAG
 
         # Optionally, check if the container is running
         docker ps
