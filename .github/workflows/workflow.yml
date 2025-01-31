@@ -30,7 +30,7 @@ jobs:
         WEBAPP_ECR_REPOSITORY: clo835-assignment1-webapp-image
         IMAGE_TAG: v0.1
       run: |
-        cd web/
+        cd /web/
         ls -ltra
         # Build Docker images
         docker build -t $ECR_REGISTRY/$SQL_ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile_mysql .
@@ -45,7 +45,12 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/assignment1.pem
         chmod 600 ~/.ssh/assignment1.pem
-  
+      
+    - name: Copy SQL file to EC2
+      run: |
+        cd /web/
+        scp -o StrictHostKeyChecking=no -i ~/.ssh/assignment1.pem mysql.sql ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/mysql.sql
+
     - name: Deploy to EC2 and Run Containers
       run: |
         ssh -t -o StrictHostKeyChecking=no -i ~/.ssh/assignment1.pem ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
@@ -85,7 +90,16 @@ jobs:
         docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1  
             
         echo "Starting MySQL container..."
-        docker run -d --name mysql --network webapp-network -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1
+        docker run -d --name mysql --network webapp-network -e MYSQL_ROOT_PASSWORD=my-secret-pw MYSQL_DATABASE=mydatabase -p 3306:3306 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1
+
+        echo "Waiting for MySQL to start..."
+        sleep 30
+
+        echo "Copying SQL file into MySQL container..."
+        docker cp /home/ec2-user/mysql.sql mysql:/mysql.sql
+
+        echo "Executing SQL script inside MySQL container..."
+        docker exec -i mysql mysql -u root -pmy-secret-pw mydatabase < /mysql.sql
 
         echo "Starting Web Application containers..."
         docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
