@@ -102,9 +102,9 @@ jobs:
         docker exec -i mysql mysql -u root -p my-secret-pw mydatabase < /mysql.sql
 
         echo "Starting Web Application containers..."
-        docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-        docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8082:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-        docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8083:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8081:8080 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8082:8080 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8083:8080 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
 
         echo "Verifying running containers..."
         docker ps
