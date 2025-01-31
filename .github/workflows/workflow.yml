@@ -1,5 +1,4 @@
 name: SQL and Web Application - Deploy to ECR
-#a
 on: 
   push:
     branches: [ main ]
@@ -51,6 +50,18 @@ jobs:
       run: |
         ssh -t -o StrictHostKeyChecking=no -i ~/.ssh/assignment1.pem ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
 
+        mkdir -p ~/.aws
+        cat <<EOT > ~/.aws/credentials
+        [default]
+        aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}
+        region=us-east-1
+        EOT
+        
+        chmod 600 ~/.aws/credentials
+        echo "AWS credentials added successfully."
+
         # Ensure Docker is installed
         if ! command -v docker &> /dev/null
         then
@@ -64,7 +75,8 @@ jobs:
 
         docker network create webapp-network || true
         docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1     
-        docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1     
+        docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1  
+            
         # Run MySQL container with necessary environment variables
         docker run -d --name mysql --network webapp-network -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1
 
@@ -75,4 +87,4 @@ jobs:
 
         # Optionally, check if the container is running
         docker ps
-        EOF
+        'EOF'
