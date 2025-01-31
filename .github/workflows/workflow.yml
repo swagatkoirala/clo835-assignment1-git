@@ -74,10 +74,12 @@ jobs:
             echo "Docker not found! Installing..."
             sudo yum update -y
             sudo yum install -y docker
-            sudo systemctl start docker
-            sudo systemctl enable docker
-            sudo usermod -aG docker ec2-user
         fi
+
+        echo "Starting Docker service..."
+        sudo systemctl start docker
+        sudo systemctl enable docker
+        sudo usermod -aG docker ec2-user
 
         echo "Logging into Amazon ECR on EC2..."
         AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
