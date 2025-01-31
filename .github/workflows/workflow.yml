@@ -1,5 +1,4 @@
 name: SQL and Web Application - Deploy to ECR
-#test the project 1
 on: 
   pull_request:
     branches:
