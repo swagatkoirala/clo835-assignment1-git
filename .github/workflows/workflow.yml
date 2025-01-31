@@ -1,4 +1,5 @@
 name: SQL and Web Application - Deploy to ECR
+#test the project
 on: 
   push:
     branches: [ main ]
