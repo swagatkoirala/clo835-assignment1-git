@@ -99,7 +99,7 @@ jobs:
         docker cp /home/ec2-user/mysql.sql mysql:/mysql.sql
 
         echo "Executing SQL script inside MySQL container..."
-        docker exec -i mysql mysql -u root -pmy-secret-pw mydatabase < /mysql.sql
+        docker exec -i mysql mysql -u root -p my-secret-pw mydatabase < /mysql.sql
 
         echo "Starting Web Application containers..."
         docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
