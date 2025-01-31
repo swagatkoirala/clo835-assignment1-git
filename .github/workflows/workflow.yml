@@ -48,6 +48,7 @@ jobs:
       
     - name: Copy SQL file to EC2
       run: |
+        cd web/
         scp -o StrictHostKeyChecking=no -i ~/.ssh/assignment1.pem mysql.sql ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/mysql.sql
 
     - name: Deploy to EC2 and Run Containers
