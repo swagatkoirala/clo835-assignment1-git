@@ -48,7 +48,6 @@ jobs:
       
     - name: Copy SQL file to EC2
       run: |
-        cd web/
         scp -o StrictHostKeyChecking=no -i ~/.ssh/assignment1.pem mysql.sql ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/mysql.sql
 
     - name: Deploy to EC2 and Run Containers
@@ -90,7 +89,7 @@ jobs:
         docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1  
             
         echo "Starting MySQL container..."
-        docker run -d --name mysql --network webapp-network -e MYSQL_ROOT_PASSWORD=my-secret-pw MYSQL_DATABASE=mydatabase -p 3306:3306 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1
+        docker run -d --name mysql --network webapp-network -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=mydatabase -p 3306:3306 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1
 
         echo "Waiting for MySQL to start..."
         sleep 30
