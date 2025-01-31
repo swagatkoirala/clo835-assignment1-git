@@ -62,3 +62,19 @@ This guide outlines the steps to set up docker.
    sudo systemctl enable docker
    ```
 
+# SQL Setup
+
+This guide outlines the steps to set up mysql.
+
+## Step 1: Install Docker in EC2
+
+1. Open the terminal in your EC2 Instance.
+2. Run the following commands to install mysql:
+   ```bash
+   sudo yum update -y
+   sudo yum install -y mysql
+   ```
+3. To execute command line:
+   ```bash
+   docker exec -it <mysql_container_name> mysql -u root -p
+   ```
