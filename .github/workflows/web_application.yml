@@ -62,9 +62,9 @@ jobs:
         docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
             
         # Run containers in detached mode
-        nohup docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue DB_HOST=mysql -e DB_PORT=3306 -e DB_USER=root -e DB_PASSWORD=my-secret-pw -e DB_NAME=mydatabase -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-        nohup docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink DB_HOST=mysql -e DB_PORT=3306 -e DB_USER=root -e DB_PASSWORD=my-secret-pw -e DB_NAME=mydatabase -p 8082:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-        nohup docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime DB_HOST=mysql -e DB_PORT=3306 -e DB_USER=root -e DB_PASSWORD=my-secret-pw -e DB_NAME=mydatabase -p 8083:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        nohup docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -e DB_HOST=mysql -e DB_PORT=3306 -e DB_USER=root -e DB_PASSWORD=my-secret-pw -e DB_NAME=mydatabase -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        nohup docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -e DB_HOST=mysql -e DB_PORT=3306 -e DB_USER=root -e DB_PASSWORD=my-secret-pw -e DB_NAME=mydatabase -p 8082:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        nohup docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -e DB_HOST=mysql -e DB_PORT=3306 -e DB_USER=root -e DB_PASSWORD=my-secret-pw -e DB_NAME=mydatabase -p 8083:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
 
         # Optionally, check if the container is running
         docker ps
