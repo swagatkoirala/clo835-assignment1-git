@@ -1,5 +1,4 @@
 name: SQL and Web Application - Deploy to ECR
-#lets test
 on: 
   push:
     branches: [ main ]
@@ -24,7 +23,7 @@ jobs:
         AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
         AWS_REGION: us-east-1
 
-    - name: Build, test, tag, and push sql image to Amazon ECR
+    - name: Build, test, tag, and push SQL and WebApp images to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         SQL_ECR_REPOSITORY: clo835-assignment1-sql-image
@@ -33,11 +32,11 @@ jobs:
       run: |
         cd web/
         ls -ltra
-        # Build Docker image
+        # Build Docker images
         docker build -t $ECR_REGISTRY/$SQL_ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile_mysql .
         docker build -t $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
 
-        # Push image to ECR
+        # Push images to ECR
         docker push $ECR_REGISTRY/$SQL_ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$IMAGE_TAG
 
@@ -51,6 +50,7 @@ jobs:
       run: |
         ssh -t -o StrictHostKeyChecking=no -i ~/.ssh/assignment1.pem ec2-user@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
 
+        echo "Setting up AWS credentials..."
         mkdir -p ~/.aws
         cat <<EOT > ~/.aws/credentials
         [default]
@@ -59,9 +59,8 @@ jobs:
         aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}
         region=us-east-1
         EOT
-        
         chmod 600 ~/.aws/credentials
-        echo "AWS credentials added successfully."
+        echo "AWS credentials configured successfully."
 
         # Ensure Docker is installed
         if ! command -v docker &> /dev/null
@@ -74,18 +73,26 @@ jobs:
             sudo usermod -aG docker ec2-user
         fi
 
+        echo "Logging into Amazon ECR on EC2..."
+        AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
+
+        echo "Creating Docker network..."
         docker network create webapp-network || true
+
+        echo "Pulling Docker images from Amazon ECR..."
         docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1     
         docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1  
             
-        # Run MySQL container with necessary environment variables
+        echo "Starting MySQL container..."
         docker run -d --name mysql --network webapp-network -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1
 
-        # Run Web Application container with necessary environment variables
+        echo "Starting Web Application containers..."
         docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8081:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
         docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8082:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
         docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8083:80 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
 
-        # Optionally, check if the container is running
+        echo "Verifying running containers..."
         docker ps
-        'EOF'
+
+        EOF
