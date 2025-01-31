@@ -90,7 +90,7 @@ jobs:
         docker pull ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1  
             
         echo "Starting MySQL container..."
-        docker run -d --name mysql --network webapp-network -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=mydatabase -p 3306:3306 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1
+        docker run -d --name mysql --network webapp-network -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=employees -p 3306:3306 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-sql-image:v0.1
 
         echo "Waiting for MySQL to start..."
         sleep 30
@@ -99,12 +99,12 @@ jobs:
         docker cp /home/ec2-user/mysql.sql mysql:/mysql.sql
 
         echo "Executing SQL script inside MySQL container..."
-        docker exec -i mysql mysql -u root -p my-secret-pw mydatabase < /mysql.sql
+        docker exec -i mysql mysql -u root -p my-secret-pw employees < /mysql.sql
 
         echo "Starting Web Application containers..."
-        docker run -d --name blue-container --network webapp-network -e BG_COLOR=blue -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8081:8080 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-        docker run -d --name pink-container --network webapp-network -e BG_COLOR=pink -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8082:8080 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
-        docker run -d --name lime-container --network webapp-network -e BG_COLOR=lime -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=my-secret-pw -e DATABASE=mydatabase -p 8083:8080 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        docker run -d --name blue-container --network webapp-network -e APP_COLOR=blue -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=admin -e DATABASE=employess -p 8081:8080 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        docker run -d --name pink-container --network webapp-network -e APP_COLOR=pink -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=admin -e DATABASE=employess -p 8082:8080 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
+        docker run -d --name lime-container --network webapp-network -e APP_COLOR=lime -e DBHOST=mysql -e DBPORT=3306 -e DBUSER=root -e DBPWD=admin -e DATABASE=employess -p 8083:8080 ${{ steps.login-ecr.outputs.registry }}/clo835-assignment1-webapp-image:v0.1
 
         echo "Verifying running containers..."
         docker ps
