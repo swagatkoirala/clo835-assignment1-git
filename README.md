@@ -1,80 +1,39 @@
-# Terraform Setup and Deployment Guide
+# Install the required MySQL package
 
-This guide outlines the steps to set up and deploy Terraform configurations in an AWS Cloud9 environment for EC2 instance and AWS ECR.
+sudo apt-get update -y
+sudo apt-get install mysql-client -y
 
-## Step 1: Install Terraform in Cloud9
+# Running application locally
+pip3 install -r requirements.txt
+sudo python3 app.py
+# Building and running 2 tier web application locally
+### Building mysql docker image 
+```docker build -t sql_database -f Dockerfile_mysql . ```
 
-1. Open the terminal in your Cloud9 environment.
-2. Run the following commands to install Terraform:
-   ```bash
-   sudo yum install -y yum-utils
-   sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
-   sudo yum -y install terraform
-   ```
+### Building application docker image 
+```docker build -t web_application -f Dockerfile . ```
 
-## Step 2: Initialize and Apply Terraform for network
+### Running mysql
+```docker run -d -e MYSQL_ROOT_PASSWORD=pw  my_db```
 
-1. Navigate to the `terraform/network` directory:
-   ```bash
-   cd /terraform/network
-   ```
-2. Run the following Terraform commands:
-   ```bash
-   terraform init
-   terraform validate
-   terraform plan
-   terraform apply
-   ```
+### Get the IP of the database and export it as DBHOST variable
+```docker inspect <container_id>```
 
-## Step 3: Create a Global SSH Key
-
-1. Generate an SSH key to be used for environment in `/terraform` directory:
-   ```bash
-   ssh-keygen -t rsa -b 2048 -f assignment1
-   ```
-
-## Step 4: Initialize and Apply Terraform for webserver
-
-1. Navigate to the `terraform/webserver` directory:
-   ```bash
-   cd /terraform/webserver
-   ```
-2. Run the following Terraform commands:
-   ```bash
-   terraform init
-   terraform validate
-   terraform plan
-   terraform apply
-   ```
-
-# Docker Setup
-
-This guide outlines the steps to set up docker.
-
-## Step 1: Install Docker in EC2
-
-1. Open the terminal in your EC2 Instance.
-2. Run the following commands to install Docker:
-   ```bash
-   sudo yum update -y
-   sudo yum install -y docker
-   sudo systemctl start docker
-   sudo systemctl enable docker
-   ```
-
-# SQL Setup
-
-This guide outlines the steps to set up mysql.
-
-## Step 1: Install Docker in EC2
-
-1. Open the terminal in your EC2 Instance.
-2. Run the following commands to install mysql:
-   ```bash
-   sudo yum update -y
-   sudo yum install -y mysql
-   ```
-3. To execute command line:
-   ```bash
-   docker exec -it <mysql_container_name> mysql -u root -p
-   ```
+### Example when running DB runs as a docker container and app is running locally
+```
+export DBHOST=127.0.0.1
+export DBPORT=3307
+```
+### Example when running DB runs as a docker container and app is running locally
+```
+export DBHOST=172.17.0.2
+export DBPORT=3306
+```
+```
+export DBUSER=root
+export DATABASE=employees
+export DBPWD=pw
+export APP_COLOR=blue
+```
+### Run the application, make sure it is visible in the browser
+```docker run -p 8080:8080  -e DBHOST=$DBHOST -e DBPORT=$DBPORT -e  DBUSER=$DBUSER -e DBPWD=$DBPWD  web_application```
