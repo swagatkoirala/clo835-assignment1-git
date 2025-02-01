@@ -35,8 +35,6 @@ jobs:
         WEBAPP_ECR_REPOSITORY: clo835-assignment1-webapp-image
         IMAGE_TAG: v0.1
       run: |
-        cd web/
-        ls -ltra
         # Build Docker images
         docker build -t $ECR_REGISTRY/$SQL_ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile_mysql .
         docker build -t $ECR_REGISTRY/$WEBAPP_ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
@@ -53,7 +51,6 @@ jobs:
       
     - name: Copy SQL file to EC2
       run: |
-        cd web/
         scp -o StrictHostKeyChecking=no -i ~/.ssh/assignment1.pem mysql.sql ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/mysql.sql
 
     - name: Deploy to EC2 and Run Containers
